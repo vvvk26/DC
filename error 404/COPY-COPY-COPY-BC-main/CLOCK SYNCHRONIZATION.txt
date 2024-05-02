@@ -1,0 +1,160 @@
+import java.util.ArrayList; 
+import java.util.List; 
+import java.util.Random;
+
+
+class Machine {
+    private int id;
+    private int clock;
+
+    public Machine(int id) {
+        this.id = id;
+        this.clock = new Random().nextInt(100); // Initialize clock with random value
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getClock() {
+        return clock;
+    }
+
+    public void setClock(int clock) {
+        this.clock = clock;
+    }
+}
+public class BerkeleyAlgorithm {
+    private List<Machine> machines; public BerkeleyAlgorithm(int
+numMachines) {
+machines = new ArrayList<>(); 
+for (int i = 0; i < numMachines;i++)
+{
+machines.add(new Machine(i));
+    
+}
+    
+}
+public void synchronizeClocks() 
+{ 
+    int sum = 0;
+for (Machine machine : machines)
+{	sum += machine.getClock();
+    
+}
+int average = sum /
+machines.size();
+for (Machine machine : machines)
+{
+machine.setClock(average);} } public void printClocks() {
+for (Machine machine : machines)
+{
+System.out.println("Machine "+ machine.getId() + ": Clock = " + machine.getClock());}}
+public static void main(String[] args){
+    BerkeleyAlgorithm algorithm = new
+BerkeleyAlgorithm(5); // Number of machines
+System.out.println("Before synchronization:");
+algorithm.printClocks(); algorithm.synchronizeClocks();
+System.out.println("\nAfter synchronization:");
+algorithm.printClocks(); 
+    
+}
+}
+
+OP:
+BEFORE SYNCHRONIZATION
+MACHINE  0  CLOCK=96
+MACHINE  1  CLOCK=60
+MACHINE  2  CLOCK=87
+MACHINE  3  CLOCK=14
+MACHINE  4  CLOCK=35
+
+AFTER 
+MACHINE  0  CLOCK=58
+MACHINE  1  CLOCK=58
+MACHINE  2  CLOCK=58
+MACHINE  3  CLOCK=58
+MACHINE  4  CLOCK=58
+
+
+import java.util.*;
+
+public class BerkleysClkSync {
+    // time server node index
+    private static final int TIME_SERVER_NODE = 0;
+
+    // time server offset in seconds
+    private static final int TIME_SERVER_OFFSET = 0;
+
+    // a node in network
+    public static class Node {
+        public int id;
+        public long clock;
+        public long offset;
+
+        // initialize the clock with the current time in seconds
+        Node(int id, long offset) {
+            this.id = id;
+            this.offset = offset;
+            this.clock = System.currentTimeMillis() / 1000;
+        }
+
+        public void adjustClock(long offset) {
+            clock += offset;
+        }
+    }
+
+    // synchronize all nodes in network
+    public static void synchronizeClocks(List<Node> nodes) {
+        long serverTime = nodes.get(TIME_SERVER_NODE).clock + TIME_SERVER_OFFSET;
+        // long serverTime = nodes.get(0).clock + nodes.get(0).clock;
+        // adjust offset to each node
+        for (Node node : nodes) {
+            if (node.id != TIME_SERVER_NODE) {
+                long nodeTime = node.clock + node.offset;
+                long offset = serverTime - nodeTime;
+                node.adjustClock(offset);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        List<Node> nodes = new ArrayList<>();
+        nodes.add(new Node(1, 10)); // node 1 with 10 seconds offset
+        nodes.add(new Node(2, -5)); // node 2 with -5 seconds offset
+        nodes.add(new Node(3, 20)); // node 3 with 20 seconds offset
+
+        System.out.println("Before:");
+        for (Node node : nodes)
+            System.out.println("Node " + node.id + " clock: " + node.clock);
+
+        synchronizeClocks(nodes);
+
+        System.out.println("After:");
+        for (Node node : nodes)
+            System.out.println("Node " + node.id + " clock: " + node.clock);
+
+    }
+}
+
+Before:
+Node 1 clock: 1714406269
+Node 2 clock: 1714406269
+Node 3 clock: 1714406269
+After:
+Node 1 clock: 1714406259
+Node 2 clock: 1714406274
+Node 3 clock: 1714406249
+
+
+/*
+
+Looking at the output, we can see that the initial clock values of all nodes are the same because they were initialized with the current time in seconds,
+ and they were created almost simultaneously. After synchronization, the clocks of all nodes have been adjusted to be closer to the time server's clock. 
+Node 1's clock has been adjusted by -10 seconds, Node 2's clock has been adjusted by +5 seconds, and Node 3's clock has been adjusted by -20 seconds,
+ which corresponds to their respective initial offsets from the time server's clock.
+
+Overall, the algorithm aims to synchronize all the nodes' clocks with the time server's clock,
+ even if they are running on different machines and have different initial offsets from real-time.
+
+*/

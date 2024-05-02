@@ -1,0 +1,78 @@
+WRITER PROGRAM
+import java.io.BufferedWriter; 
+import java.io.FileWriter; 
+import java.io.IOException; 
+public class WriterProgram {
+public static void main(String[] args) 
+{ String filePath = "message.txt";
+String message = "Hello from Abhay!";
+
+try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) 
+{ writer.write(message);
+
+     System.out.println("Message written to " + filePath);
+
+} catch (IOException e) { e.printStackTrace();
+}
+}
+}
+
+ReaderProgram:
+
+import java.io.BufferedReader; 
+import java.io.FileReader; 
+import java.io.IOException; 
+public class ReaderProgram {
+public static void main(String[] args) 
+{ String filePath = "message.txt";
+try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) 
+{ String line;
+while ((line = reader.readLine()) != null) { 
+System.out.println("Message read from " + filePath + ": " + line);
+}
+
+} catch (IOException e) { e.printStackTrace();
+}
+
+}
+
+}
+
+o/p
+command to write:
+javac WriterProgram.java
+javac ReaderProgram.java
+java WriterProgram.java
+Message Written to message.txt
+java ReaderProgram
+Message Read From message.txt: Hello from Abhay!
+
+python:
+# WriterProgram
+class WriterProgram:
+    @staticmethod
+    def main():
+        file_path = "message.txt"
+        message = "Hello from Raj!"
+        try:
+            with open(file_path, 'w') as writer:
+                writer.write(message)
+                print("Message written to", file_path)
+        except IOError as e:
+            print("Error:", e)
+
+# ReaderProgram
+class ReaderProgram:
+    @staticmethod
+    def main():
+        file_path = "message.txt"
+        try:
+            with open(file_path, 'r') as reader:
+                for line in reader:
+                    print("Message read from", file_path + ":", line.strip())
+        except IOError as e:
+            print("Error:", e)
+
+if _name_ == "_main_":
+    WriterProgram.main()
+    ReaderProgram.main()

@@ -1,0 +1,163 @@
+
+RMI_Interface:
+package pkg_RMI;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface RMI_Interface extends Remote {
+    void displayMessage() throws RemoteException;
+    int factorial(int n) throws RemoteException;
+} 
+
+package pkg_RMI;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.util.Scanner;
+import java.rmi.NotBoundException;
+import java.rmi.Naming;
+public class RMI_Client {
+	public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException{
+		try {
+			RMI_Interface helloAPI = (RMI_Interface) Naming.lookup("rmi://localhost:1880/hello");
+//			helloAPI.displayMessage();
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Enter a number to find the factorial: ");
+			int n = sc.nextInt();
+			int ans = helloAPI.factorial(5);
+			System.out.println("Factorial of "+n+" is "+ans);
+		}
+		catch(Exception e)
+		{
+			System.out.println("The RMI APP is not running...");
+			e.printStackTrace();
+		}
+	}
+	
+	
+}
+
+
+
+
+
+
+RMI_Server:
+package pkg_RMI;
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+public class RMI_Server extends UnicastRemoteObject implements RMI_Interface{
+	public RMI_Server() throws RemoteException {
+		super();
+	}
+	public static void main(String[] args)throws RemoteException, AlreadyBoundException {
+		try {
+			Registry registry = LocateRegistry.createRegistry(1880);
+			registry.bind("hello", new RMI_Server());
+			System.out.println("The RMI_Server is running and ready...");
+		}
+		catch (Exception e) {
+		    e.printStackTrace();
+		    System.out.println("The RMI_Server is not running...");
+		}
+	}
+	@Override
+	public void displayMessage()throws RemoteException{
+		System.out.println("----------------------------------------------");
+		System.out.println("Hello Akash!");
+		System.out.println("----------------------------------------------");
+		
+	}
+	
+	@Override
+	public int factorial(int n)throws RemoteException{
+		int fact = 1;
+		for(int i=1;i<=n;i++) {
+			fact *= i;
+		}
+		return fact;
+	}
+}
+
+
+ENTER FACTORIAL
+5
+FACTORIAL OF 5 IS 120
+
+
+
+alternate
+Hello.java
+import java.rmi.*;
+import java.rmi.server.*;
+
+public class Hello extends UnicastRemoteObject implements HelloInterface 
+{
+  private String message;
+
+  public Hello (String msg) throws RemoteException 
+  {
+    message = msg;
+  }
+
+  public String say() throws RemoteException 
+  {
+    return message;
+  }
+}
+
+HelloClient.java
+import java.rmi.*;
+
+public class HelloClient
+{
+  public static void main (String[] argv) 
+  {
+    try 
+    {
+      HelloInterface hello = (HelloInterface) Naming.lookup("//localhost/Hello");
+      System.out.println(hello.say());
+    }
+    catch (Exception e) 
+    {
+      System.out.println ("HelloClient exception: " + e);
+    }
+  }
+}
+
+HelloInterface.java
+import java.rmi.*;
+
+public interface HelloInterface extends Remote 
+{
+  public String say() throws RemoteException;
+}
+HelloServer.java
+import java.rmi.*;
+
+public class HelloServer
+{
+  public static void main (String[] argv) 
+  {
+    try 
+    {
+      Hello robj = new Hello ("Hello, world!");
+      Naming.rebind ("Hello", robj);
+      System.out.println ("Hello Server is ready.");
+    } 
+    catch (Exception e) 
+    {
+      System.out.println ("Hello Server failed: " + e);
+    }
+  }
+}
+
+tu run open 3 terminal
+1)javac *.java
+rmiregistry
+
+2)java HelloServer
+3)java HelloClient

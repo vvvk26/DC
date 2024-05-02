@@ -1,0 +1,72 @@
+8 Non Tokenzt
+1)richard 
+
+import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+class Site {
+    private int id;
+    private Lock lock;
+
+    public Site(int id) {
+        this.id = id;
+        this.lock = new ReentrantLock();
+    }
+
+    public void request(Site other) {
+        System.out.println("Site " + this.id + " sends REQUEST message to Site " + other.id);
+        other.receiveRequest(this);
+    }
+
+    public void receiveRequest(Site from) {
+        System.out.println("Site " + this.id + " receives REQUEST message from Site " + from.id);
+        System.out.println("Site " + this.id + " sends REPLY message to Site " + from.id);
+        from.receiveReply(this);
+    }
+
+    public void receiveReply(Site from) {
+        System.out.println("Site " + this.id + " receives REPLY message from Site " + from.id);
+    }
+
+    public void enterCriticalSection() {
+        System.out.println("Site " + this.id + " enters critical section");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of sites: ");
+        int numSites = scanner.nextInt();
+        scanner.close();
+
+        Site[] sites = new Site[numSites];
+        for (int i = 0; i < numSites; i++) {
+            sites[i] = new Site(i + 1);
+        }
+
+        sites[0].request(sites[1]);
+        sites[0].enterCriticalSection();
+        sites[0].request(sites[2]);
+        sites[0].enterCriticalSection();
+    }
+}
+
+
+Op
+Enter the number of sites: 3
+Site 1 sends REQUEST message to Site 2
+Site 2 receives REQUEST message from Site 1
+Site 2 sends REPLY message to Site 1
+Site 1 receives REPLY message from Site 2
+Site 1 enters critical section
+Site 1 sends REQUEST message to Site 3
+Site 3 receives REQUEST message from Site 1
+Site 3 sends REPLY message to Site 1
+Site 1 receives REPLY message from Site 3
+Site 1 enters critical section
+
+=== Code Execution Successful ===
+
+2)
